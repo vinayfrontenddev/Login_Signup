@@ -9,14 +9,38 @@ const Login = () => {
 
   const validate = () => {
     const newErrors = {};
-    if (!formData.username) newErrors.username = "Username is required";
-    if (!formData.password) newErrors.password = "Password is required";
+
+    // Username: Alphanumeric + . _ - allowed
+    if (!formData.username.trim()) {
+      newErrors.username = "Username is required";
+    } else if (!/^[a-zA-Z0-9._-]+$/.test(formData.username)) {
+      newErrors.username =
+        "Username must be alphanumeric with . _ - allowed";
+    }
+
+    // Password: Same rule as username + not equal to username
+    if (!formData.password.trim()) {
+      newErrors.password = "Password is required";
+    } else if (!/^[a-zA-Z0-9._-]+$/.test(formData.password)) {
+      newErrors.password =
+        "Password must be alphanumeric with . _ - allowed";
+    } else if (formData.password === formData.username) {
+      newErrors.password = "Password cannot be same as username";
+    }
+
     return newErrors;
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+
+    // Live validation clear per field
+    setErrors((prevErrors) => {
+      const updatedErrors = { ...prevErrors };
+      delete updatedErrors[name];
+      return updatedErrors;
+    });
   };
 
   const handleSubmit = (e) => {
@@ -66,9 +90,9 @@ const Login = () => {
           <div className="mb-6 relative">
             <label
               htmlFor="password"
-              className="block text-xs font-semibold text-gray-400 mb-1 uppercase"
+              className="block text-xs font-semibold text-[#0c6b5f] mb-1 uppercase"
             >
-              New Password
+              Password
             </label>
             <input
               id="password"
@@ -101,7 +125,10 @@ const Login = () => {
           {/* Signup */}
           <p className="mt-6 text-center text-sm text-gray-600">
             Don’t have Account?{" "}
-            <Link to="/signup" className="text-[#0c6b5f] font-semibold hover:underline">
+            <Link
+              to="/signup"
+              className="text-[#0c6b5f] font-semibold hover:underline"
+            >
               SignUp
             </Link>
           </p>
